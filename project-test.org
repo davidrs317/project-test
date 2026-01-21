@@ -1,0 +1,134 @@
+#+title: Test Project Emacs Package
+#+author: David Sullivan
+#+description: Simple package designed to emulate the ~project-compile~ function in ~project.el~, but for running the test suite of a project
+#+property: header-args :noweb yes :tangle ./project-test.el
+
+* Introduction
+I decided to move to ~project.el~ from ~projectile.el~ because ~project.el~ offers much of the same functionality without requiring the same degree of configuration. However, ~project.el~ does not offer a functionality for running test suites like ~projectile.el~ does. This project aims to resolve this.
+
+* Literate Format
+This package is being implemented in a literate programming fashion to facilitate making it more self-documenting. The code will still include documentation strings in order to integrate with Emacs documentation facilities, but having an org-mode file to refer back to will be useful when trying to upgrade or further document the package
+
+* Title/Subtitle Section
+From what I can tell most Emacs packages start with a title and descriptor on the first line, packages supporting a recent version of Emacs typically include the lexical binding cookie. This package will include the lexical binding cookie forcing it to run on Emacs versions >= 24.1 when true lexical binding was added.
+
+The [[info:cl#Obsolete Lexical Binding][CL-Lib info node on Obsolete Lexical Binding]] explains when lexical binding was added to Emacs Lisp
+
+#+begin_src elisp :lexical t
+;; test-project.el --- Ability to run a test suite on the current project -*- lexical-binding: t; -*-
+
+#+end_src
+
+* Authorship and Package details block
+This section is based on the Authorship-version block of Fox Kiester's [[https:github.com/noctuid/general.el][general.el package]]. Most packages contain a section like this. I'm currently in the process of trying to find the guidelines for this section. When I find it, this explanation section will be updated.
+
+#+begin_src elisp :lexical t
+;; Author: David Sullivan <devel@sullatrix.us>
+;; URL: https://github.com/davidrs317
+;; Created: January 21, 2026
+;; Keywords: project, compile, test
+;; Package-Requires: ((emacs "24.1"))
+;; Version: 0.1
+
+#+end_src
+
+* License Information
+I am not trying to push this package to GNU ELPA so it will not be licensed as part of Emacs. However, I do want it to be freely accessible and modifiable so it will be licensed with the GNU General Public License. See the LICENSE file included in the repo.
+
+#+begin_src elisp :lexical t
+;; This file is not part of GNU Emacs.
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published
+;; the Free Software Foundation (FSF), either version 3 of the
+;; License, or (at the option of the reader) any later version.
+
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+;; General Public License for more details.
+
+;; A copy of the GNU General Public License should be have been
+;; received along with this program. If not, see
+;; <http://www.gnu.org/licenses/>.
+
+#+end_src
+
+* Commentary
+Brief section to explain the purpose of the code within itself to follow the conventions of Emacs packages.
+
+#+begin_src elisp :lexical t
+;;; Commentary:
+;; This package provides one additonal function and one additional
+;; customizable variable to test a project using Emacs's `compile'
+;; functionality. The intent is to add run a project's test suite
+;; without overriding the compilation command as currently happens
+;; with the `project-compile' command.
+
+;; For more information see the README in the online repository.
+
+#+end_src
+
+* Implementation
+The package implementation will be held in this section. It will be broken into smaller chunks in subsections using ~noweb~ references.
+
+#+begin_src elisp :lexical t
+;;; Code:
+
+<<project-test-variable>>
+<<project-test-function>>
+<<project-test-footer>>
+#+end_src
+
+** Variable Definition
+:PROPERTIES:
+:header-args: :noweb-ref project-test-variable
+:END:
+#+begin_src elisp :lexical t
+(defgroup project-test nil
+  "Provide an interface to run a test suite in a project."
+  :group 'project
+  :prefix "project-test-")
+
+(defcustom project-test-command "make -k"
+  "Command that should be run executed to run project's test suite.
+The default value is \"make -k\" which will attempt to compile as much
+as possible after encountering errors"
+  :group 'project-test
+  :type 'string)
+
+#+end_src
+** Function Definition
+:PROPERTIES:
+:header-args: :noweb-ref project-test-function
+:END:
+#+begin_src elisp :lexical t
+;;;###autoload
+(defun project-test-run ()
+  "Run the command to execute a project's test suite in a `compile' buffer."
+  (declare (interactive-only compile))
+  (interactive)
+  (let ((default-directory (project-root (project-current t)))
+		(compilation-buffer-name-function
+		 (or project-compilation-buffer-name-function
+			 compilation-buffer-name-function)))
+	(compile project-test-command)))
+
+#+end_src
+** Provide Package
+:PROPERTIES:
+:header-args: :noweb-ref project-test-footer
+:END:
+In order for a package to be accessible to other Emacs Lisp files, the provide special form must be used
+
+#+begin_src elisp :lexical t
+(provide 'project-test)
+;;; project-test.el ends here
+#+end_src
+* Local Variables
+
+
+# Local Variables:
+# eval: (add-hook 'after-save-hook (lambda () (if (y-or-n-p "Tangle?") (org-babel-tangle))) nil t)
+# flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+# End:
