@@ -138,20 +138,6 @@ Manual Installation can be performed as follows:
    3. via gh cli: ~gh repo clone davidrs317/project-test.git~
 2. In your emacs config, add the project to your ~load-path~ and call ~(require 'project-test)~
 
-** Elpaca
-[[https://github.com/progfolio/elpaca][Elpaca]] is my package manager of choice. It allows for packages to be loaded asynchronously so that Emacs is not blocked during package installation.
-
-*** Without ~elpaca-use-package~ integration
-#+begin_src elisp :lexical t :tangle no
-(elpaca (project-test :host github :repo "davidrs317"))
-#+end_src
-
-*** with ~elpaca-use-package~ integration
-#+begin_src elisp :lexical t :tangle no
-(use-package project-test
-  :ensure (:host github :repo "davidrs317/project-test"))
-#+end_src
-
 ** package.el
 ~package.el~ is Emacs's built-in package manager. The installation process is very similar to the process described for the ~elpaca-use-package~ integration except for using the ~vc~ keyword instead of elpaca's method that leverages the ~ensure~ keyword. The installation would appear as follows:
 #+begin_src elisp :lexical t :tangle no
