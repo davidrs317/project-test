@@ -125,7 +125,43 @@ In order for a package to be accessible to other Emacs Lisp files, the provide s
 (provide 'project-test)
 ;;; project-test.el ends here
 #+end_src
+
+* Installation
+This package is not intended to be put on ELPA, NonGnuElpa, or MELPA at the moment. Therefore, installation must be done manually or using a package manager method that supports specifying the repository for installation.
+
+** Manual Installation
+Manual Installation can be performed as follows:
+1. clone the repository:
+   1. via https: ~git clone https://github.com/davidrs317/project-test.git~
+   2. via ssh: ~git clone git@github.com:davidrs317/project-test.git~
+      Note that installation via ssh requires configuring an ssh key. Instructions for doing so can be found on [[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent][GitHub's website]] 
+   3. via gh cli: ~gh repo clone davidrs317/project-test.git~
+2. In your emacs config, add the project to your ~load-path~ and call ~(require 'project-test)~
+
+** Elpaca
+[[https://github.com/progfolio/elpaca][Elpaca]] is my package manager of choice. It allows for packages to be loaded asynchronously so that Emacs is not blocked during package installation.
+
+*** Without ~elpaca-use-package~ integration
+#+begin_src elisp :lexical t :tangle no
+(elpaca (project-test :host github :repo "davidrs317"))
+#+end_src
+
+*** with ~elpaca-use-package~ integration
+#+begin_src elisp :lexical t :tangle no
+(use-package project-test
+  :ensure (:host github :repo "davidrs317/project-test"))
+#+end_src
+
+** package.el
+~package.el~ is Emacs's built-in package manager. The installation process is very similar to the process described for the ~elpaca-use-package~ integration except for using the ~vc~ keyword instead of elpaca's method that leverages the ~ensure~ keyword. The installation would appear as follows:
+#+begin_src elisp :lexical t :tangle no
+(use-package project-test
+  :vc (:url "https://github.com/davidrs317/project-test.git"
+			:rev :newest))
+#+end_src
+
 * Local Variables
+This section is here to force my file-local variables into the bottom of the file
 
 
 # Local Variables:
